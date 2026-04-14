@@ -39,6 +39,15 @@ export interface Activity {
   created_at: string
 }
 
+export interface TripInvite {
+  id: string
+  trip_id: string
+  token: string
+  created_by: string
+  created_at: string
+  expires_at: string
+}
+
 export interface TripWithMembers extends Trip {
   trip_members: TripMember[]
 }

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { TripItinerary } from '@/components/trips/trip-itinerary';
+import { MembersSheet } from '@/components/trips/members-sheet';
 import type { TripDayWithActivities } from '@/types/database';
 
 interface TripPageProps {
@@ -30,11 +31,24 @@ export default async function TripPage({ params }: TripPageProps) {
     .eq('trip_id', id)
     .order('day_number', { ascending: true });
 
+  const { data: members } = await admin
+    .from('trip_members')
+    .select('user_id, role')
+    .eq('trip_id', id);
+
+  // Obtener emails de los miembros
+  const {
+    data: { users: authUsers },
+  } = await admin.auth.admin.listUsers();
+  const membersWithEmail = (members ?? []).map((m) => ({
+    ...m,
+    email: authUsers.find((u) => u.id === m.user_id)?.email,
+  }));
+
   const typedDays = (days ?? []) as TripDayWithActivities[];
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header */}
       <div className="bg-white border-b border-slate-200 px-4 pt-12 pb-4 sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <Link href="/dashboard" className="p-1.5 -ml-1.5 rounded-full hover:bg-slate-100">
@@ -46,6 +60,7 @@ export default async function TripPage({ params }: TripPageProps) {
               <p className="text-xs text-slate-500 truncate">{trip.description}</p>
             )}
           </div>
+          <MembersSheet tripId={id} members={membersWithEmail} currentUserId={user.id} />
         </div>
       </div>
 

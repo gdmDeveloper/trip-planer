@@ -38,7 +38,7 @@ export function TripCard({ trip, index }: TripCardProps) {
     <Link href={`/dashboard/trips/${trip.id}`}>
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform">
         {/* Cover */}
-        <div className={`h-28 bg-gradient-to-br ${gradient} relative`}>
+        <div className={`h-28 bg-linear-to-br ${gradient} relative`}>
           {trip.start_date && (
             <span className="absolute bottom-2 left-3 text-xs text-white/90 bg-black/20 px-2 py-0.5 rounded-full">
               {formatDate(trip.start_date)}
