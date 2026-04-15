@@ -58,6 +58,26 @@ export async function toggleFavorite(
   revalidatePath(`/dashboard/trips/${tripId}`)
 }
 
+export async function updateActivity(
+  activityId: string,
+  tripId: string,
+  data: { title: string; place: string; time: string; notes: string }
+) {
+  const admin = createAdminClient()
+
+  await admin
+    .from('activities')
+    .update({
+      title: data.title,
+      place: data.place || null,
+      time: data.time || null,
+      notes: data.notes || null,
+    })
+    .eq('id', activityId)
+
+  revalidatePath(`/dashboard/trips/${tripId}`)
+}
+
 export async function deleteActivity(activityId: string, tripId: string) {
   const admin = createAdminClient()
 
