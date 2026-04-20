@@ -21,42 +21,53 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#FFFBF5]">
-      {/* Header Mobile First */}
-      <header className="sticky top-0 z-30 bg-[#FFFBF5]/90 backdrop-blur-md px-6 pt-10 pb-6 border-b border-orange-100/30">
-        <div className="flex flex-col gap-6">
-          {/* Logo / Nombre de la App */}
-          <div className="flex items-center gap-2">
-            <div className="bg-linear-to-br from-orange-500 to-rose-500 p-1.5 rounded-lg shadow-sm">
-              <Sparkles className="text-white" size={16} />
-            </div>
-            <span className="text-xl font-black tracking-tighter text-orange-950 font-serif italic">
-              Trip<span className="text-orange-500 not-italic font-sans">Planner</span>
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
+      {/* Contenedor del Header tipo "Cajón/Isla" */}
+      <div className="sticky top-0 z-30 px-4 pt-4">
+        <header className="bg-white/80 backdrop-blur-xl border border-orange-100/50 rounded-[2.5rem] px-6 py-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="flex flex-col gap-5">
+            {/* Logo Row */}
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-orange-950">¡Hola, {firstName}!</h1>
-                <span className="text-2xl">👋</span>
+                <div className="bg-linear-to-br from-orange-500 to-rose-500 p-1.5 rounded-xl shadow-sm">
+                  <Sparkles className="text-white" size={14} />
+                </div>
+                <span className="text-lg font-black tracking-tighter text-orange-950 font-serif italic">
+                  Trip<span className="text-orange-500 not-italic font-sans">Planner</span>
+                </span>
               </div>
-              <p className="text-sm font-medium text-orange-800/60 flex items-center gap-1.5">
-                <Map size={14} className="text-orange-400" />
-                {trips?.length
-                  ? `${trips.length} ${trips.length === 1 ? 'destino guardado' : 'destinos guardados'}`
-                  : '¿A dónde vamos hoy?'}
-              </p>
+
+              {/* Badge de contador de viajes - Muy de app moderna */}
+              <div className="bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
+                <p className="text-[10px] font-bold text-orange-600 uppercase tracking-wider">
+                  {trips?.length || 0} Viajes
+                </p>
+              </div>
             </div>
 
-            {/* Avatar estilo Sunset */}
-            <div className="w-11 h-11 rounded-full bg-linear-to-tr from-orange-400 to-rose-400 p-0.5 shadow-lg shadow-orange-200">
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-sm font-bold text-orange-600">
-                {firstName[0].toUpperCase()}
+            {/* Profile Row */}
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
+                  ¡Hola, {firstName}! 👋
+                </h1>
+                <p className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+                  <Map size={12} className="text-orange-400" />
+                  ¿Cuál es el próximo destino?
+                </p>
+              </div>
+
+              {/* Avatar con anillo de progreso o diseño premium */}
+              <div className="relative">
+                <div className="w-12 h-12 rounded-2xl bg-linear-to-tr from-orange-400 to-rose-400 p-0.5 rotate-3 shadow-md">
+                  <div className="w-full h-full rounded-[14px] bg-white flex items-center justify-center text-sm font-black text-orange-600 -rotate-3">
+                    {firstName[0].toUpperCase()}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
       {/* Listado de Viajes */}
       <main className="px-6 pt-6 pb-32">
         <div className="flex flex-col gap-5">
