@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Trash2, Users, Calendar, ChevronRight } from 'lucide-react';
 import { deleteTrip } from '@/app/actions/trips';
 import type { Trip } from '@/types/database';
+import { useDaysLeft } from '@/hooks/use-days-left';
 
 const COLORS = ['bg-orange-500', 'bg-rose-500', 'bg-amber-500', 'bg-emerald-600'];
 
@@ -16,6 +17,7 @@ interface TripCardProps {
 export function TripCard({ trip, index }: TripCardProps) {
   const [deleting, setDeleting] = useState(false);
   const colorClass = COLORS[index % COLORS.length];
+  console.log(trip);
 
   async function handleDelete(e: React.MouseEvent) {
     e.preventDefault();
@@ -33,7 +35,7 @@ export function TripCard({ trip, index }: TripCardProps) {
       <div className="bg-white rounded-2xl p-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-orange-100/40 flex items-center gap-4 active:scale-[0.98] transition-all duration-200">
         {/* Indicador de color minimalista */}
         <div
-          className={`flex-shrink-0 w-16 h-16 ${colorClass} rounded-2xl flex flex-col items-center justify-center text-white shadow-sm ring-4 ring-orange-50/50`}
+          className={`shrink-0 w-16 h-16 ${colorClass} rounded-2xl flex flex-col items-center justify-center text-white shadow-sm ring-4 ring-orange-50/50`}
         >
           <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
             {new Date(trip.start_date || '')
@@ -79,10 +81,10 @@ export function TripCard({ trip, index }: TripCardProps) {
                 <Users size={12} className="text-slate-400" />
                 {trip.trip_members?.length || 0}
               </div>
-              <div className="flex items-center gap-1 text-[11px] font-medium text-slate-400">
-                <Calendar size={12} />
-                <span>{formatDate(trip.start_date)}</span>
-              </div>
+              {/* Contador de días */}
+              <span className="text-[10px] font-black uppercase tracking-wider text-orange-500">
+                {useDaysLeft(trip.start_date)}
+              </span>
             </div>
 
             <ChevronRight

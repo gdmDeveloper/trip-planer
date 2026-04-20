@@ -5,14 +5,7 @@ import { Users, Link2, Mail, Trash2, Copy, Check, Sparkles, X } from 'lucide-rea
 import { inviteByEmail, generateInviteLink, removeMember } from '@/app/actions/members';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 interface Member {
   user_id: string;
