@@ -53,8 +53,13 @@ export function TripItinerary({ days, tripId }: TripItineraryProps) {
                 </p>
               )}
             </div>
+            {/* Ordenar actividades */}
             {selectedDay.activities
-              .sort((a, b) => a.order_index - b.order_index)
+              .sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+              })
               .map((activity) => (
                 <ActivityItem key={activity.id} activity={activity} tripId={tripId} />
               ))}
