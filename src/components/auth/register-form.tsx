@@ -40,7 +40,7 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 p-4">
       <div className="space-y-2">
         <Label htmlFor="name">Nombre</Label>
         <Input
