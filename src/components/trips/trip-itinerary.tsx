@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { DaySelector } from './day-selector';
 import { ActivityItem } from './activity-item';
 import { AddActivitySheet } from './add-activity-sheet';
@@ -15,17 +15,19 @@ interface TripItineraryProps {
 export function TripItinerary({ days, tripId }: TripItineraryProps) {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(days[0]?.id ?? null);
   const [animKey, setAnimKey] = useState(0);
-  const prevDayId = useRef<string | null>(null);
+
+  // Reemplazamos el useRef por un estado para rastrear el índice anterior
+  const [prevIndex, setPrevIndex] = useState(0);
 
   const selectedDay = days.find((d) => d.id === selectedDayId);
   const selectedIndex = days.findIndex((d) => d.id === selectedDayId);
-  const prevIndex = days.findIndex((d) => d.id === prevDayId.current);
 
-  // Detect direction of swipe for the slide animation
+  // Detectamos la dirección comparando el índice actual con el estado del anterior
   const direction = selectedIndex >= prevIndex ? 1 : -1;
 
   function handleSelect(id: string) {
-    prevDayId.current = selectedDayId;
+    // Antes de cambiar el ID, guardamos el índice actual como "previo"
+    setPrevIndex(selectedIndex);
     setSelectedDayId(id);
     setAnimKey((k) => k + 1);
   }
@@ -59,7 +61,6 @@ export function TripItinerary({ days, tripId }: TripItineraryProps) {
 
       {/* ── Content area ──────────────────────────────────────────────── */}
       <div style={{ flex: 1, paddingBottom: 120, overflow: 'hidden' }}>
-        {/* No days at all */}
         {!selectedDay ? (
           <div
             style={{
@@ -156,7 +157,6 @@ export function TripItinerary({ days, tripId }: TripItineraryProps) {
                     )}
                   </div>
 
-                  {/* Activity count badge */}
                   <div
                     style={{
                       background: activityCount > 0 ? '#EFF6FF' : '#F2F2F7',
@@ -183,7 +183,6 @@ export function TripItinerary({ days, tripId }: TripItineraryProps) {
             {/* ── Activities ───────────────────────────────────────── */}
             <div style={{ padding: '0 16px', position: 'relative' }}>
               {activityCount === 0 ? (
-                /* Empty day state */
                 <div
                   style={{
                     display: 'flex',
@@ -208,9 +207,7 @@ export function TripItinerary({ days, tripId }: TripItineraryProps) {
                   </p>
                 </div>
               ) : (
-                /* Activity list with timeline */
                 <div style={{ position: 'relative' }}>
-                  {/* Timeline line */}
                   <div
                     style={{
                       position: 'absolute',
@@ -245,7 +242,6 @@ export function TripItinerary({ days, tripId }: TripItineraryProps) {
         )}
       </div>
 
-      {/* ── FAB for adding activities ──────────────────────────────────── */}
       {selectedDayId && <AddActivitySheet dayId={selectedDayId} tripId={tripId} />}
 
       <style>{`

@@ -101,7 +101,7 @@ export default async function DashboardPage() {
             }}
           >
             <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner"
+              className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-inner"
               style={{ background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)' }}
             >
               <Sparkles size={20} className="text-white" />
@@ -172,7 +172,7 @@ export default async function DashboardPage() {
                 />
               </div>
               <h3 className="text-[17px] font-semibold text-gray-900">Sin aventuras aún</h3>
-              <p className="text-[14px] text-gray-400 mt-1.5 leading-relaxed max-w-[220px]">
+              <p className="text-[14px] text-gray-400 mt-1.5 leading-relaxed max-w-55">
                 Toca el botón para empezar a planear tu próximo destino.
               </p>
 
