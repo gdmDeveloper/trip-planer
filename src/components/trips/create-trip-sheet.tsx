@@ -1,15 +1,13 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Plus, Calendar, Map, AlignLeft } from 'lucide-react';
+import { Plus, Calendar, Map, AlignLeft, X } from 'lucide-react';
 import { createTrip } from '@/app/actions/trips';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 export function CreateTripSheet() {
   const [open, setOpen] = useState(false);
+  const [fabPressed, setFabPressed] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function handleAction(formData: FormData) {
@@ -21,109 +19,264 @@ export function CreateTripSheet() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        {/* Botón flotante idéntico al de actividades para coherencia visual */}
-        <button className="fixed bottom-8 right-6 w-16 h-16 bg-linear-to-tr from-orange-500 to-rose-400 text-white rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(249,115,22,0.4)] active:scale-90 transition-all z-50 group">
-          <Plus size={32} className="group-hover:rotate-90 transition-transform duration-300" />
+        {/* ── FAB — idéntico al de AddActivitySheet ─────────────── */}
+        <button
+          onMouseDown={() => setFabPressed(true)}
+          onMouseUp={() => setFabPressed(false)}
+          onMouseLeave={() => setFabPressed(false)}
+          onTouchStart={() => setFabPressed(true)}
+          onTouchEnd={() => setFabPressed(false)}
+          style={{
+            width: 58,
+            height: 58,
+            borderRadius: '50%',
+            backgroundColor: '#007AFF',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: fabPressed
+              ? '0 4px 12px rgba(0,122,255,0.3)'
+              : '0 6px 24px rgba(0,122,255,0.45)',
+            transform: fabPressed ? 'scale(0.91)' : 'scale(1)',
+            transition: 'transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease',
+          }}
+        >
+          <Plus
+            size={26}
+            strokeWidth={2.5}
+            style={{
+              color: 'white',
+              transform: open ? 'rotate(45deg)' : 'rotate(0deg)',
+              transition: 'transform 0.25s cubic-bezier(0.34,1.56,0.64,1)',
+            }}
+          />
         </button>
       </SheetTrigger>
 
       <SheetContent
         side="bottom"
-        className="rounded-t-[2.5rem] border-none bg-orange-50/95 backdrop-blur-md pb-12 pt-6"
+        className="border-none p-0 focus:outline-none"
+        style={{
+          borderRadius: '20px 20px 0 0',
+          backgroundColor: '#F2F2F7',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          maxHeight: '92dvh',
+          overflowY: 'auto',
+        }}
       >
-        <div className="px-6 space-y-7">
-          {/* Header con estilo logo */}
-          <div className="flex flex-col items-center gap-4 relative">
-            <div className="w-12 h-1.5 bg-orange-200 rounded-full" />
-
-            <div className="flex w-full items-center justify-between">
-              <SheetHeader>
-                <SheetTitle className="text-2xl font-bold text-orange-950 flex items-center gap-2.5">
-                  <Map className="text-orange-500" size={24} />
-                  Nuevo Destino
-                </SheetTitle>
-              </SheetHeader>
-            </div>
+        {/* ── Sticky header ──────────────────────────────────────── */}
+        <div
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            backgroundColor: 'rgba(242,242,247,0.92)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderBottom: '0.5px solid rgba(0,0,0,0.08)',
+            padding: '10px 16px 14px',
+          }}
+        >
+          <div
+            style={{
+              width: 36,
+              height: 4,
+              borderRadius: 2,
+              backgroundColor: 'rgba(60,60,67,0.3)',
+              margin: '0 auto 14px',
+            }}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <SheetTitle
+              style={{
+                fontSize: 17,
+                fontWeight: 600,
+                color: '#0a0a0a',
+                margin: 0,
+                letterSpacing: '-0.2px',
+              }}
+            >
+              Nuevo destino
+            </SheetTitle>
+            <button
+              onClick={() => setOpen(false)}
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                backgroundColor: 'rgba(116,116,128,0.18)',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <X size={15} strokeWidth={2.5} style={{ color: '#3c3c43' }} />
+            </button>
           </div>
+        </div>
 
-          <form ref={formRef} action={handleAction} className="space-y-6">
-            {/* Campo: Título del Viaje */}
-            <div className="space-y-2.5">
-              <Label htmlFor="title" className="text-orange-900 font-semibold text-base ml-1">
+        {/* ── Form ─────────────────────────────────────────────────── */}
+        <form ref={formRef} action={handleAction}>
+          <div style={{ padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* Title */}
+            <FormCard>
+              <FieldLabel icon={<Map size={13} strokeWidth={2.5} style={{ color: '#007AFF' }} />}>
                 ¿A dónde vamos?
-              </Label>
-              <Input
+              </FieldLabel>
+              <input
                 id="title"
                 name="title"
                 placeholder="Ej: Verano en Mallorca 🏝️"
                 required
-                className="bg-white border-orange-100 focus:border-orange-300 focus:ring-orange-200 rounded-xl h-14 shadow-sm text-base px-5"
+                style={inputStyle}
+                onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(0,122,255,0.4)')}
+                onBlur={(e) => (e.currentTarget.style.borderColor = 'transparent')}
               />
-            </div>
+            </FormCard>
 
-            {/* Campo: Descripción */}
-            <div className="space-y-2.5">
-              <Label
-                htmlFor="description"
-                className="text-orange-900 font-semibold text-base ml-1 flex items-center gap-2"
+            {/* Description */}
+            <FormCard>
+              <FieldLabel
+                icon={<AlignLeft size={13} strokeWidth={2.5} style={{ color: '#007AFF' }} />}
               >
-                <AlignLeft className="text-orange-500" size={18} />
                 Descripción
-              </Label>
-              <Input
+              </FieldLabel>
+              <input
                 id="description"
                 name="description"
                 placeholder="Ruta por las mejores calas..."
-                className="bg-white border-orange-100 focus:border-orange-300 rounded-xl h-14 shadow-sm text-base px-5"
+                style={inputStyle}
+                onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(0,122,255,0.4)')}
+                onBlur={(e) => (e.currentTarget.style.borderColor = 'transparent')}
               />
-            </div>
+            </FormCard>
 
-            {/* Campos: Fechas */}
-            <div className="grid grid-cols-2 gap-5">
-              <div className="space-y-2.5">
-                <Label
-                  htmlFor="start_date"
-                  className="text-orange-900 font-semibold text-base ml-1 flex items-center gap-2"
+            {/* Dates — side by side */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <FormCard>
+                <FieldLabel
+                  icon={<Calendar size={13} strokeWidth={2.5} style={{ color: '#007AFF' }} />}
                 >
-                  <Calendar size={18} className="text-orange-500" />
                   Ida
-                </Label>
-                <Input
+                </FieldLabel>
+                <input
                   id="start_date"
                   name="start_date"
                   type="date"
-                  className="bg-white border-orange-100 focus:border-orange-300 rounded-xl h-14 shadow-sm text-base px-5 appearance-none"
+                  style={{ ...inputStyle, colorScheme: 'light' }}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(0,122,255,0.4)')}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = 'transparent')}
                 />
-              </div>
-              <div className="space-y-2.5">
-                <Label
-                  htmlFor="end_date"
-                  className="text-orange-900 font-semibold text-base ml-1 flex items-center gap-2"
+              </FormCard>
+              <FormCard>
+                <FieldLabel
+                  icon={<Calendar size={13} strokeWidth={2.5} style={{ color: '#007AFF' }} />}
                 >
-                  <Calendar size={18} className="text-orange-500" />
                   Vuelta
-                </Label>
-                <Input
+                </FieldLabel>
+                <input
                   id="end_date"
                   name="end_date"
                   type="date"
-                  className="bg-white border-orange-100 focus:border-orange-300 rounded-xl h-14 shadow-sm text-base px-5"
+                  style={{ ...inputStyle, colorScheme: 'light' }}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(0,122,255,0.4)')}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = 'transparent')}
                 />
-              </div>
+              </FormCard>
             </div>
+          </div>
 
-            {/* Botón de Acción */}
-            <div className="pt-4">
-              <Button
-                type="submit"
-                className="w-full h-16 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-lg rounded-2xl shadow-lg shadow-orange-200 transition-all active:scale-[0.98]"
-              >
-                Empezar a planear
-              </Button>
-            </div>
-          </form>
-        </div>
+          {/* ── Submit ───────────────────────────────────────────────── */}
+          <div
+            style={{
+              padding: '0 16px 24px',
+              position: 'sticky',
+              bottom: 0,
+              background: 'linear-gradient(to top, #F2F2F7 80%, transparent)',
+            }}
+          >
+            <button
+              type="submit"
+              style={{
+                width: '100%',
+                height: 54,
+                borderRadius: 14,
+                backgroundColor: '#007AFF',
+                border: 'none',
+                color: 'white',
+                fontSize: 17,
+                fontWeight: 600,
+                cursor: 'pointer',
+                letterSpacing: '-0.2px',
+                boxShadow: '0 4px 14px rgba(0,122,255,0.35)',
+                transition: 'transform 0.15s ease',
+              }}
+              onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
+              onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+            >
+              Empezar a planear
+            </button>
+          </div>
+        </form>
       </SheetContent>
     </Sheet>
   );
 }
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+function FormCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        backgroundColor: 'white',
+        borderRadius: 14,
+        padding: '12px 14px',
+        border: '0.5px solid rgba(0,0,0,0.06)',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function FieldLabel({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
+  return (
+    <label
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 5,
+        fontSize: 12,
+        fontWeight: 600,
+        color: '#8e8e93',
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+        marginBottom: 6,
+      }}
+    >
+      {icon}
+      {children}
+    </label>
+  );
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  height: 40,
+  backgroundColor: 'transparent',
+  border: '1px solid transparent',
+  borderRadius: 8,
+  fontSize: 16,
+  color: '#0a0a0a',
+  outline: 'none',
+  padding: '0 4px',
+  transition: 'border-color 0.2s ease',
+  boxSizing: 'border-box',
+};
