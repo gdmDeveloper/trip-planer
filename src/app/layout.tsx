@@ -5,7 +5,7 @@ import './globals.css';
 const geist = Geist({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Your Trip Planner',
+  title: 'Trip-Planner',
   description: 'Organiza tu próximo viaje',
 };
 
