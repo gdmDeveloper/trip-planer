@@ -39,6 +39,32 @@ function uid() {
   return Math.random().toString(36).slice(2, 9);
 }
 
+function isValidUrl(str: string) {
+  try {
+    const url = new URL(str);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch (_) {
+    return false;
+  }
+}
+
+function getMapsQueryText(urlStr: string): string {
+  try {
+    const url = new URL(urlStr);
+    const queryParam = url.searchParams.get('query');
+
+    if (queryParam) {
+      // decodeURIComponent limpia los caracteres especiales y replace cambia los "+" por espacios
+      return decodeURIComponent(queryParam).replace(/\+/g, ' ');
+    }
+
+    // Si es una URL válida pero no tiene parámetro ?query= (ej: un enlace plano), mostramos el dominio
+    return url.hostname + url.pathname;
+  } catch (_) {
+    return urlStr;
+  }
+}
+
 const SECTION_COLORS = {
   hotels: { dot: '#34C759', bg: '#F0FDF4', icon: '#34C759' },
   notes: { dot: '#FF9500', bg: '#FFF7ED', icon: '#FF9500' },
@@ -56,6 +82,7 @@ export function TripInfoPanel({
   const [notes, setNotes] = useState(initialNotes);
   const [btnPressed, setBtnPressed] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [activeFieldId, setActiveFieldId] = useState<string | null>(null);
 
   // ── Persist helpers ────────────────────────────────────────────────────────
   function persist(patch: Partial<{ hotels: Hotel[]; notes: string }>) {
@@ -361,14 +388,61 @@ export function TripInfoPanel({
                         <Trash2 size={13} strokeWidth={2} style={{ color: '#FF3B30' }} />
                       </button>
                     </div>
-
                     <FieldBox label="Dirección">
-                      <input
-                        value={h.address ?? ''}
-                        onChange={(e) => updateHotel(h.id, { address: e.target.value })}
-                        placeholder="Calle, ciudad"
-                        style={{ ...inlineInput, fontSize: 13 }}
-                      />
+                      {h.address && isValidUrl(h.address) && activeFieldId !== `${h.id}-address` ? (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: 6,
+                          }}
+                        >
+                          <a
+                            href={h.address}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              fontSize: 13,
+                              color: '#007AFF', // Azul iOS
+                              textDecoration: 'underline',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              flex: 1,
+                              fontFamily: 'inherit',
+                              fontWeight: 500,
+                            }}
+                          >
+                            {/* ✨ AQUÍ EL CAMBIO: Extrae y limpia el texto del parámetro query */}
+                            📍 {getMapsQueryText(h.address)}
+                          </a>
+                          <button
+                            onClick={() => setActiveFieldId(`${h.id}-address`)} // Te permite volver a ver/editar la URL completa
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              padding: 2,
+                              display: 'flex',
+                              alignItems: 'center',
+                              color: '#007AFF',
+                            }}
+                          >
+                            <ExternalLink size={14} />
+                          </button>
+                        </div>
+                      ) : (
+                        <input
+                          value={h.address ?? ''}
+                          onChange={(e) => updateHotel(h.id, { address: e.target.value })}
+                          onFocus={() => setActiveFieldId(`${h.id}-address`)}
+                          onBlur={() => setActiveFieldId(null)}
+                          placeholder="Calle, ciudad o enlace de Maps"
+                          style={{ ...inlineInput, fontSize: 13 }}
+                        />
+                      )}
                     </FieldBox>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
