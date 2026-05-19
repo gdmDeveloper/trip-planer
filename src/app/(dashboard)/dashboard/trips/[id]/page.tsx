@@ -5,6 +5,8 @@ import { ArrowLeft, Calendar, MapPin, Users } from 'lucide-react';
 import Link from 'next/link';
 import { TripItinerary } from '@/components/trips/trip-itinerary';
 import { MembersSheet } from '@/components/trips/members-sheet';
+import { TripInfoPanel } from '@/components/trips/trip-info-panel'; // 1. IMPORTA TU PANEL AQUÍ
+import { getTripInfo } from '@/app/actions/trip-info'; // Importa la acción de lectura
 import type { TripDayWithActivities } from '@/types/database';
 
 interface TripPageProps {
@@ -37,6 +39,9 @@ export default async function TripPage({ params }: TripPageProps) {
 
   const { data: trip } = await admin.from('trips').select('*').eq('id', id).single();
   if (!trip) redirect('/dashboard');
+
+  // 2. OBTENEMOS LOS DATOS GUARDADOS EN SUPABASE PARA ESTE VIAJE
+  const tripInfo = await getTripInfo(id);
 
   const { data: days } = await admin
     .from('trip_days')
@@ -177,6 +182,9 @@ export default async function TripPage({ params }: TripPageProps) {
         <TripItinerary days={typedDays} tripId={id} />
       </main>
 
+      {/* ── 3. AÑADE TU PANEL FLOTANTE AQUÍ (Se renderiza encima de todo) ── */}
+      <TripInfoPanel tripId={id} initialHotels={tripInfo.hotels} initialNotes={tripInfo.notes} />
+
       <style>{`
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(16px); }
@@ -190,7 +198,7 @@ export default async function TripPage({ params }: TripPageProps) {
           from { opacity: 0; transform: scale(0.92); }
           to   { opacity: 1; transform: scale(1); }
         }
-        .animate-slide-up  { animation: slideUp  0.45s cubic-bezier(0.34,1.4,0.64,1) both; }
+        .animate-slide-up { animation: slideUp  0.45s cubic-bezier(0.34,1.4,0.64,1) both; }
         .animate-fade-in   { animation: fadeIn   0.35s ease both; }
         .animate-scale-in  { animation: scaleIn  0.4s  cubic-bezier(0.34,1.4,0.64,1) both; }
       `}</style>
